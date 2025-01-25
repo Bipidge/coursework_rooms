@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+requests
+mysql
+mysqlclient
+mysql-connector-python
+httpx
+pydantic
