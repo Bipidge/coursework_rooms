@@ -4,8 +4,10 @@ import httpx
 import requests
 from db.functions import *
 import json
+from starlette.middleware.sessions import SessionMiddleware
 
 app = FastAPI()
+app.add_middleware(SessionMiddleware, secret_key=api_secret_key)
 
 # Example model for a POST request
 class Item(BaseModel):
@@ -41,30 +43,36 @@ def get_24hr_temp_percipation(lon, lat):
     rain_sum = float(data["daily"]["rain_sum"][0])
     showers_sum = float(data["daily"]["showers_sum"][0])
     snowfall_sum = float(data["daily"]["snowfall_sum"][0])
-    if rain_sum <= 0.5 and rain_sum != 0:
-        percipitation.append("Light rain")
-    elif rain_sum <= 4:
-        percipitation.append("Moderate rain")
-    elif rain_sum <= 8:
-        percipitation.append("Heavy rain")
-    else:
-        percipitation.append("Very Heavy rain")
 
-    if showers_sum != 0 and showers_sum <= 2:
-        percipitation.append("Slight shower")
-    elif showers_sum <= 10:
-        percipitation.append("Moderate shower")
-    elif showers_sum <= 50:
-        percipitation.append("Heavy shower")
-    else:
-        percipitation.append("Violent shower")
+    print(f"percipation: {rain_sum}, {showers_sum}, {snowfall_sum}")
 
-    if snowfall_sum != 0 and snowfall_sum <= 5:
-        percipitation.append("Light snowfall")
-    elif snowfall_sum <= 10:
-        percipitation.append("Moderate snowfall")
-    else:
-        percipitation.append("Heavy snowfall")
+    if rain_sum != 0.0:
+        if rain_sum <= 0.5:
+            percipitation.append("Light rain")
+        elif rain_sum <= 4:
+            percipitation.append("Moderate rain")
+        elif rain_sum <= 8:
+            percipitation.append("Heavy rain")
+        else:
+            percipitation.append("Very Heavy rain")
+
+    if showers_sum != 0.0:
+        if showers_sum <= 2:
+            percipitation.append("Slight shower")
+        elif showers_sum <= 10:
+            percipitation.append("Moderate shower")
+        elif showers_sum <= 50:
+            percipitation.append("Heavy shower")
+        else:
+            percipitation.append("Violent shower")
+
+    if snowfall_sum != 0.0:
+        if snowfall_sum <= 5:
+            percipitation.append("Light snowfall")
+        elif snowfall_sum <= 10:
+            percipitation.append("Moderate snowfall")
+        else:
+            percipitation.append("Heavy snowfall")
 
     result = {"temp_min": data["daily"]["temperature_2m_min"][0], "temp_max": data["daily"]["temperature_2m_max"][0], "percipitation":str(percipitation)}
     return result
@@ -73,6 +81,11 @@ def get_number_of_crimes(lon, lat):
     res = requests.get(f"https://data.police.uk/api/crimes-street/all-crime?date=2024-01&lat={lat}&lng={lon}")
     data = json.loads(res.content)
     return len(data)
+
+# check postcode
+@app.get("/postcode_check/{postcode}")
+def check_postcode(postcode: str):
+    get_coords_from_ukpostcode(postcode)
 
 # list all rooms (name, location, price, room_id, distance) (weather will be inside the room menu)
 @app.get("/rooms/{postcode}")
@@ -101,16 +114,45 @@ def get_room_by_id(id:int, postcode:str):
     distance = get_distance(user_coords["lon"], user_coords["lat"], room_coords["lon"], room_coords["lat"])
     weather24hr = get_24hr_temp_percipation(room_coords["lon"], room_coords["lat"])
     num_of_crimes_past_month = get_number_of_crimes(room_coords["lon"], room_coords["lat"])
+    application = get_pending_application(id)
 
-    return {"room": str(room), "distance":distance, "weather24hr":weather24hr, "num_of_crimes_past_month":num_of_crimes_past_month}
 
+    return {"room": str(room), "distance":distance, "weather24hr":weather24hr, "num_of_crimes_past_month":num_of_crimes_past_month, "pending_application": application}
+
+# make an application for a room
+@app.get("/room/apply/{room_id},{months},{room_name}")
+def create_room_application(room_id: int, months: int, room_name:str):
+    if months > 120:
+        raise HTTPException(400, "The number of months must be below 120 (10 years).")
+    new_application(room_id, months, room_name)
 
 # cancel room application
+@app.get("/applications/cancel/{application_id}")
+def cancel_room_application(application_id: str):
+    cancel_application(application_id)
 
 # view history of applications 
+@app.get("/applications")
+def get_application_list():
+    application_tuples = get_applications()
+    applications = []
+
+    for application in application_tuples:
+        applications.append(list(application))
+
+    return applications
+
+@app.get("/applications/status/pending")
+def get_pending_application_list():
+    pending_tuples = get_pending_applications()
+    pending = []
+    for p in pending_tuples:
+        pending.append(list(p))
+    
+    return pending
 
 if __name__ == "__main__":
     import uvicorn
 
     # Run the application on localhost:8000
-    uvicorn.run("api.main:app", host="127.0.0.1", port=8000, reload=True)
+    uvicorn.run("api.main:app", host=api_host, port=api_port, reload=True)

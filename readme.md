@@ -5,3 +5,5 @@ how to launch:
 3) py -m api.main - launch api
 4) open one more terminal
 5) py -m client.main
+
+you can configure the mysql db details and orchestrator(api) details in the configuration.py (such as host, port, etc...)

@@ -6,3 +6,4 @@ mysqlclient
 mysql-connector-python
 httpx
 pydantic
+itsdangerous
