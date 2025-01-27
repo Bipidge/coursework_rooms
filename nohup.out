@@ -1,0 +1,56 @@
+Traceback (most recent call last):
+  File "/home/azureuser/orchestrator/coursework_rooms/.venv/lib/python3.13/site-packages/mysql/connector/connection_cext.py", line 365, in _open_connection
+    self._cmysql.connect(**cnx_kwargs)
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^
+_mysql_connector.MySQLInterfaceError: Can't connect to MySQL server on 'localhost:3306' (111)
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/azureuser/orchestrator/coursework_rooms/api/main.py", line 5, in <module>
+    from db.functions import *
+  File "/home/azureuser/orchestrator/coursework_rooms/db/functions.py", line 9, in <module>
+    db = mysql.connector.connect(host=db_host, port=db_port, user=db_username, password=db_password, database=db_name)
+  File "/home/azureuser/orchestrator/coursework_rooms/.venv/lib/python3.13/site-packages/mysql/connector/pooling.py", line 322, in connect
+    return CMySQLConnection(*args, **kwargs)
+  File "/home/azureuser/orchestrator/coursework_rooms/.venv/lib/python3.13/site-packages/mysql/connector/connection_cext.py", line 153, in __init__
+    self.connect(**kwargs)
+    ~~~~~~~~~~~~^^^^^^^^^^
+  File "/home/azureuser/orchestrator/coursework_rooms/.venv/lib/python3.13/site-packages/mysql/connector/abstracts.py", line 1529, in connect
+    self._open_connection()
+    ~~~~~~~~~~~~~~~~~~~~~^^
+  File "/home/azureuser/orchestrator/coursework_rooms/.venv/lib/python3.13/site-packages/mysql/connector/connection_cext.py", line 370, in _open_connection
+    raise get_mysql_exception(
+        msg=err.msg, errno=err.errno, sqlstate=err.sqlstate
+    ) from err
+mysql.connector.errors.DatabaseError: 2003 (HY000): Can't connect to MySQL server on 'localhost:3306' (111)
+Traceback (most recent call last):
+  File "/home/azureuser/orchestrator/coursework_rooms/.venv/lib/python3.13/site-packages/mysql/connector/connection_cext.py", line 365, in _open_connection
+    self._cmysql.connect(**cnx_kwargs)
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^
+_mysql_connector.MySQLInterfaceError: Can't connect to MySQL server on 'localhost:3306' (111)
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/azureuser/orchestrator/coursework_rooms/api/main.py", line 5, in <module>
+    from db.functions import *
+  File "/home/azureuser/orchestrator/coursework_rooms/db/functions.py", line 9, in <module>
+    db = mysql.connector.connect(host=db_host, port=db_port, user=db_username, password=db_password, database=db_name)
+  File "/home/azureuser/orchestrator/coursework_rooms/.venv/lib/python3.13/site-packages/mysql/connector/pooling.py", line 322, in connect
+    return CMySQLConnection(*args, **kwargs)
+  File "/home/azureuser/orchestrator/coursework_rooms/.venv/lib/python3.13/site-packages/mysql/connector/connection_cext.py", line 153, in __init__
+    self.connect(**kwargs)
+    ~~~~~~~~~~~~^^^^^^^^^^
+  File "/home/azureuser/orchestrator/coursework_rooms/.venv/lib/python3.13/site-packages/mysql/connector/abstracts.py", line 1529, in connect
+    self._open_connection()
+    ~~~~~~~~~~~~~~~~~~~~~^^
+  File "/home/azureuser/orchestrator/coursework_rooms/.venv/lib/python3.13/site-packages/mysql/connector/connection_cext.py", line 370, in _open_connection
+    raise get_mysql_exception(
+        msg=err.msg, errno=err.errno, sqlstate=err.sqlstate
+    ) from err
+mysql.connector.errors.DatabaseError: 2003 (HY000): Can't connect to MySQL server on 'localhost:3306' (111)
